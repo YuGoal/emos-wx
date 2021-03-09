@@ -10,7 +10,7 @@ const app = new Vue({
 })
 app.$mount()
 
-let baseUrl = "http://192.168.1.7:8081/emos-wx-api"
+let baseUrl = "http://192.168.1.114:8081/emos-wx-api"
 Vue.prototype.url = {
 	register: baseUrl + "/user/register",
 	login: baseUrl + "/user/login",
