@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<camera device-position="back" flash="off" class="camera" @error="error" v-if="showCamera"></camera>
+		<camera device-position="front" flash="off" class="camera" @error="error" v-if="showCamera"></camera>
 		<image mode="widthFix" class="camera" v-if="showImage" :src="photoPath"></image>
 		<view class="operate-container">
 			<button class="btn" type="primary" @tap="clickBtn()">{{btnText}}</button>
@@ -73,80 +73,96 @@
 									let city = addressComponent.city;
 									let district = addressComponent.district;
 									uni.uploadFile({
-									    url: that.url.checkin,
-									    filePath: that.photoPath,
-									    name: 'photo',
-									    header: {
-									        token: uni.getStorageSync('token')
-									    },
-									    formData: {
-									        address: address,
-									        country: nation,
-									        province: province,
-									        city: city,
-									        district: district
-									    },
-									    success: function(resp) {
-									        // console.log(resp);
-									        if (resp.statusCode == 500 && resp.data == '不存在人脸模型') {
-									            uni.hideLoading();
-									            uni.showModal({
-									                title: '提示信息',
-									                content: 'EMOS系统中不存在你的人脸识别模型，是否用当前这张照片作为人脸识别模型？',
-									                success: function(res) {
-									                    if (res.confirm) {
-									                        //上传头像图片
-									                        uni.uploadFile({
-									                            url: that.url.createFaceModel,
-									                            filePath: that.photoPath,
-									                            name: 'photo',
-									                            header: {
-									                                token: uni.getStorageSync('token')
-									                            },
-									                            success: function(resp) {
-									                                if (resp.statusCode == 500) {
-									                                    uni.showToast({
-									                                        title: resp.data,
-									                                        icon: 'none'
-									                                    });
-									                                } 
-									                                else if (resp.statusCode == 200) {
-									                                    uni.showToast({
-									                                        title: '人脸建模成功',
-									                                        icon: 'none'
-									                                    });
-									                                }
-									                            }
-									                        });
-									                    }
-									                }
-									            });
-									        } 
-									        else if (resp.statusCode == 200) {
-									            let data = JSON.parse(resp.data);
-									            let code = data.code;
-									            let msg = data.msg;
-									            if (code == 200) {
-									                uni.hideLoading();
-									                //签到成功
-									                uni.showToast({
-									                    title: '签到成功',
-									                    complete: function() {
-									                        //TODO 跳转到签到结果统计页面
+										url: that.url.checkin,
+										filePath: that.photoPath,
+										name: 'photo',
+										header: {
+											token: uni.getStorageSync('token')
+										},
+										formData: {
+											address: address,
+											country: nation,
+											province: province,
+											city: city,
+											district: district
+										},
+										success: function(resp) {
+											// console.log(resp);
+											if (resp.statusCode == 500 && resp
+												.data == '不存在人脸模型') {
+												uni.hideLoading();
+												uni.showModal({
+													title: '提示信息',
+													content: 'EMOS系统中不存在你的人脸识别模型，是否用当前这张照片作为人脸识别模型？',
+													success: function(
+													res) {
+														if (res
+															.confirm) {
+															//上传头像图片
+															uni.uploadFile({
+																url: that
+																	.url
+																	.createFaceModel,
+																filePath: that
+																	.photoPath,
+																name: 'photo',
+																header: {
+																	token: uni
+																		.getStorageSync(
+																			'token'
+																			)
+																},
+																success: function(
+																	resp
+																	) {
+																	if (resp
+																		.statusCode ==
+																		500
+																		) {
+																		uni.showToast({
+																			title: resp
+																				.data,
+																			icon: 'none'
+																		});
+																	} else if (
+																		resp
+																		.statusCode ==
+																		200
+																		) {
+																		uni.showToast({
+																			title: '人脸建模成功',
+																			icon: 'none'
+																		});
+																	}
+																}
+															});
+														}
+													}
+												});
+											} else if (resp.statusCode == 200) {
+												let data = JSON.parse(resp.data);
+												let code = data.code;
+												let msg = data.msg;
+												if (code == 200) {
+													uni.hideLoading();
+													//签到成功
+													uni.showToast({
+														title: '签到成功',
+														complete: function() {
+															// 跳转到签到结果统计页面
 															uni.navigateTo({
 																url: '../checkin_result/checkin_result'
 															});
-									                    }
-									                });
-									            }
-									        } 
-									        else if (resp.statusCode == 500) {
-									            uni.showToast({
-									                title: resp.data,
-									                icon: 'none'
-									            });
-									        }
-									    }
+														}
+													});
+												}
+											} else if (resp.statusCode == 500) {
+												uni.showToast({
+													title: resp.data,
+													icon: 'none'
+												});
+											}
+										}
 									});
 								},
 								fail: function(res) {
