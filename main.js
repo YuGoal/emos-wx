@@ -14,10 +14,12 @@ let baseUrl = "http://192.168.1.114:8081/emos-wx-api"
 Vue.prototype.url = {
 	register: baseUrl + "/user/register",
 	login: baseUrl + "/user/login",
+	searchUserSummary: baseUrl + "/user/searchUserSummary",
 	checkin: baseUrl + "/checkin/checkin",
 	createFaceModel: baseUrl + "/checkin/createFaceModel",
 	validCanCheckIn: baseUrl + "/checkin/validCanCheckIn",
 	searchTodayCheckin: baseUrl + "/checkin/searchTodayCheckin",
+	searchMonthCheckin: baseUrl + "/checkin/searchMonthCheckin",
 }
 
 Vue.prototype.ajax = function(url, methods, data, fun) {
@@ -48,4 +50,16 @@ Vue.prototype.ajax = function(url, methods, data, fun) {
 			}
 		}
 	})
+}
+
+Vue.prototype.checkPermission = function(perms) {
+	let permission = uni.getStorageSync("permission");
+	let result =false
+	for (let one of perms) {
+		if(permission.indexOf(one)!=-1){
+			result = true;
+			break
+		}
+	}
+	return result;
 }

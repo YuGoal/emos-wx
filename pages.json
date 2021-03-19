@@ -57,6 +57,13 @@
 			}
 
 		}, {
+			"path": "pages/mine/my_checkin",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
 			"path": "pages/checkin_result/checkin_result",
 			"style": {
 				"navigationBarTitleText": "",
