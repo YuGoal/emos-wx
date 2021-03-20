@@ -20,6 +20,7 @@ Vue.prototype.url = {
 	validCanCheckIn: baseUrl + "/checkin/validCanCheckIn",
 	searchTodayCheckin: baseUrl + "/checkin/searchTodayCheckin",
 	searchMonthCheckin: baseUrl + "/checkin/searchMonthCheckin",
+	refreshMessage: baseUrl + "/message/refreshMessage",
 }
 
 Vue.prototype.ajax = function(url, methods, data, fun) {

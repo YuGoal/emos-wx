@@ -1,20 +1,29 @@
 <template>
 	<view class="page">
+		<uni-popup ref="popupMsg" type="top">
+			<uni-popup-message type="success" :message="'接收到' + lastRows + '条消息'" :duration="2000" />
+		</uni-popup>
+
 		<swiper class="swiper" circular="true" interval="8000" duration="1000">
 			<swiper-item>
-				<image mode="widthFix" src="https://emos-img.oss-cn-shanghai.aliyuncs.com/img/banner/swiper-1.jpg"></image>
+				<image mode="widthFix" src="https://emos-img.oss-cn-shanghai.aliyuncs.com/img/banner/swiper-1.jpg">
+				</image>
 			</swiper-item>
 			<swiper-item>
-				<image mode="widthFix" src="https://emos-img.oss-cn-shanghai.aliyuncs.com/img/banner/swiper-2.jpg"></image>
+				<image mode="widthFix" src="https://emos-img.oss-cn-shanghai.aliyuncs.com/img/banner/swiper-2.jpg">
+				</image>
 			</swiper-item>
 			<swiper-item>
-				<image mode="widthFix" src="https://emos-img.oss-cn-shanghai.aliyuncs.com/img/banner/swiper-3.jpg"></image>
+				<image mode="widthFix" src="https://emos-img.oss-cn-shanghai.aliyuncs.com/img/banner/swiper-3.jpg">
+				</image>
 			</swiper-item>
 			<swiper-item>
-				<image mode="widthFix" src="https://emos-img.oss-cn-shanghai.aliyuncs.com/img/banner/swiper-4.jpg"></image>
+				<image mode="widthFix" src="https://emos-img.oss-cn-shanghai.aliyuncs.com/img/banner/swiper-4.jpg">
+				</image>
 			</swiper-item>
 			<swiper-item>
-				<image mode="widthFix" src="https://emos-img.oss-cn-shanghai.aliyuncs.com/img/banner/swiper-5.jpg"></image>
+				<image mode="widthFix" src="https://emos-img.oss-cn-shanghai.aliyuncs.com/img/banner/swiper-5.jpg">
+				</image>
 			</swiper-item>
 		</swiper>
 
@@ -23,15 +32,16 @@
 				<image src="../../static/icon-1.png" mode="widthFix" class="notify-icon" />
 				消息提醒
 			</view>
-			<view class="notify-content">你有{{unreadRows}}条未读消息</view>
+			<view class="notify-content" @tap="toPage('','../checkin/checkin')">你有{{unreadRows}}条未读消息</view>
 			<image src="../../static/icon-2.png" mode="widthFix" class="more-icon"></image>
 
 		</view>
 
 		<view class="nav-container">
 			<view class="nav-row">
-				<view class="nav">
-					<image class="icon" src="../../static/nav-1.png" mode="widthFix" @tap="toPage('在线签到','../checkin/checkin')"></image>
+				<view class="nav" @tap="toPage('在线签到','../checkin/checkin')">
+					<image class="icon" src="../../static/nav-1.png" mode="widthFix"
+						></image>
 					<text class="name">在线签到</text>
 				</view>
 				<view class="nav">
@@ -89,14 +99,49 @@
 </template>
 
 <script>
+	import uniPopup from '@/components/uni-popup/uni-popup.vue';
+	import uniPopupMessage from '@/components/uni-popup/uni-popup-message.vue';
+	import uniPopupDialog from '@/components/uni-popup/uni-popup-dialog.vue';
 	export default {
+		components: {
+			uniPopup,
+			uniPopupMessage,
+			uniPopupDialog
+		},
 		data() {
 			return {
+				timer: null,
 				unreadRows: 0,
+				lastRows: 0
 			}
 		},
 		onLoad() {
-
+			//监听事件
+			let that = this;
+			uni.$on('showMessage',function(){
+				that.$refs.popupMsg.open()
+			})
+		},
+		onUnload() {
+			uni.$off('showMessage',function(){
+				that.$refs.popupMsg.close()
+			})
+		},
+		onShow() {
+			let that = this;
+			that.timer = setInterval(function(){
+				that.ajax(that.url.refreshMessage,"GET",null,function(resp){
+					that.unreadRows = resp.data.unreadRows
+					that.lastRows = resp.data.lastRows
+					if(that.lastRows>0){
+						uni.$emit('showMessage')
+					}
+				})
+			},5000)
+		},
+		onHide() {
+			let that = this;
+			clearInterval(that.timer)
 		},
 		methods: {
 			toPage: function(name, url) {
